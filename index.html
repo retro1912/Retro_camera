@@ -122,7 +122,9 @@ let lastVideoTime = -1;
 let states = [];           // 顔ごとの平滑化状態
 let running = false;
 let curStamp = CFG.stamps[0] || null;   // 選択中のスタンプ
-let curFrame = CFG.frames[0] || null;   // 選択中のフレーム
+let curFrame = CFG.frames[0] || null;   // 選択中のフレーム（外カメ）
+// 内カメで固定表示するフレーム（config.js の frontFrame で指定。なければフレームなし）
+const frontFrame = CFG.frames.find(f => f.id === CFG.frontFrame) || null;
 
 function setStatus(t) {
   const s = $('status');
@@ -271,10 +273,10 @@ function updateStamps(t) {
   return any;
 }
 
-function drawFrame(cw, ch) {
-  if (!curFrame || !ready(curFrame.img)) return;
-  const im = curFrame.img;
-  if (curFrame.fit === 'cover') {
+function drawFrame(cw, ch, frame) {
+  if (!frame || !ready(frame.img)) return;
+  const im = frame.img;
+  if (frame.fit === 'cover') {
     const s = Math.max(cw / im.naturalWidth, ch / im.naturalHeight);
     const w = im.naturalWidth * s, h = im.naturalHeight * s;
     ctx.drawImage(im, (cw - w) / 2, (ch - h) / 2, w, h);
@@ -300,6 +302,7 @@ function draw(now) {
   ctx.restore();
 
   if (mirror) {
+    drawFrame(cw, ch, frontFrame);   // 内カメは固定フレーム。スタンプはその上に重ねる
     if (landmarker) {
       detect({ cw, vw, vh, s, ox, oy });
       const any = updateStamps(t);
@@ -312,7 +315,7 @@ function draw(now) {
     }
   } else {
     setStatus('');
-    drawFrame(cw, ch);
+    drawFrame(cw, ch, curFrame);
   }
 }
 
