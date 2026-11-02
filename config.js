@@ -40,7 +40,7 @@ window.APP_CONFIG = {
   ],
 
   frames: [
-    { id: 'navy-ribbon', label: 'ネイビー', src: 'images/frames/navy-ribbon.png', fit: 'stretch' },
-    { id: 'red-dots',    label: 'レッド',   src: 'images/frames/red-dots.png',    fit: 'stretch' }
+    { id: '01', label: '01', src: 'images/frames/01.png', fit: 'stretch' },
+    { id: '02',    label: '02',   src: 'images/frames/02.png',    fit: 'stretch' }
   ]
 };
