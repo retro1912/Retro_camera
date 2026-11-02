@@ -34,19 +34,13 @@ window.APP_CONFIG = {
   frontFrame: 'navy-ribbon',
 
   stamps: [
-    { id: 'bear',        label: 'クマ',     src: 'images/stamps/bear.png',        anchor: 'head', scale: 0.5,  lift: 0.3, bob: true },
-    { id: 'bear-flag',   label: '旗',       src: 'images/stamps/bear-flag.png',   anchor: 'head', scale: 0.55, lift: 0.3, bob: true },
-    { id: 'bear-salute', label: '敬礼',     src: 'images/stamps/bear-salute.png', anchor: 'head', scale: 0.45, lift: 0.3, bob: true },
-    // 頭の上 + 鼻 のセット（サンプル）
-    { id: 'bear-nose',   label: 'クマ+鼻',  thumb: 'images/stamps/bear-nose-thumb.png',
-      parts: [
-        { src: 'images/stamps/bear.png',     anchor: 'head', scale: 0.5,  lift: 0.3, bob: true },
-        { src: 'images/stamps/red-nose.png', anchor: 'nose', scale: 0.22, lift: 0 }
-      ] }
-  ],
+    { id: 'bear',        label: 'レトロベア',     src: 'images/stamps/bear.png',        anchor: 'head', scale: 1,  lift: 0.3, bob: true },
+    { id: 'ribon',   label: 'リボン',       src: 'images/stamps/ribon.png',   anchor: 'head', scale: 1.3, lift: 0, bob: false },
+    { id: 'combo', label: 'レトロベア耳',src: 'images/stamps/head.png', anchor: 'head', scale: 1.8, lift: -0.2, bob: false },
+      ],
 
   frames: [
-    { id: 'navy-ribbon', label: 'ネイビー', src: 'images/frames/navy-ribbon.png', fit: 'stretch' },
-    { id: 'red-dots',    label: 'レッド',   src: 'images/frames/red-dots.png',    fit: 'stretch' }
+    { id: '01', label: '01', src: 'images/frames/01.png', fit: 'stretch' },
+    { id: '02',    label: '02',   src: 'images/frames/02.png',    fit: 'stretch' }
   ]
 };
