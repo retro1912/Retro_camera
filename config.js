@@ -31,7 +31,7 @@ window.APP_CONFIG = {
 
   // 内カメ（自撮り）だけに固定で表示するフレーム。外カメの選択肢には出ません。
   // 内カメではスタンプだけを選べます。フレームなしにするときは null にします。
-  frontFrame: { src: 'images/frames/navy-ribbon.png', fit: 'stretch' },
+  frontFrame: { src: 'images/frames/front.png', fit: 'stretch' },
 
   stamps: [
     { id: 'bear',        label: 'レトロベア',     src: 'images/stamps/bear.png',        anchor: 'head', scale: 1,  lift: 0.3, bob: true },
