@@ -124,7 +124,13 @@ let running = false;
 let curStamp = CFG.stamps[0] || null;   // 選択中のスタンプ
 let curFrame = CFG.frames[0] || null;   // 選択中のフレーム（外カメ）
 // 内カメで固定表示するフレーム（config.js の frontFrame で指定。なければフレームなし）
-const frontFrame = CFG.frames.find(f => f.id === CFG.frontFrame) || null;
+// { src, fit } と書くと内カメ専用になり、外カメの選択肢には出ない。文字列でid指定する書き方も使える。
+const frontFrame = (() => {
+  const ff = CFG.frontFrame;
+  if (!ff) return null;
+  if (typeof ff === 'string') return CFG.frames.find(f => f.id === ff) || null;
+  return { fit: 'stretch', ...ff, img: loadImg(ff.src) };
+})();
 
 function setStatus(t) {
   const s = $('status');

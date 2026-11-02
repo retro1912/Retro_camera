@@ -29,14 +29,24 @@
 window.APP_CONFIG = {
   maxFaces: 3,
 
-  stamps: [
-    { id: 'bear',        label: 'レトロベア',     src: 'images/stamps/bear.png',        anchor: 'head', scale: 1,  lift: 0.3, bob: true },
-    { id: 'ribon',   label: 'リボン',       src: 'images/stamps/ribon.png',   anchor: 'head', scale: 1.3, lift: 0, bob: false },
-    { id: 'combo', label: 'レトロベア耳',src: 'images/stamps/head.png', anchor: 'head', scale: 1.8, lift: -0.2, bob: false },
-      ],
+  // 内カメ（自撮り）だけに固定で表示するフレーム。外カメの選択肢には出ません。
+  // 内カメではスタンプだけを選べます。フレームなしにするときは null にします。
+  frontFrame: { src: 'images/frames/navy-ribbon.png', fit: 'stretch' },
 
+  stamps: [
+    { id: 'bear',        label: 'クマ',     src: 'images/stamps/bear.png',        anchor: 'head', scale: 0.5,  lift: 0.3, bob: true },
+    { id: 'bear-flag',   label: '旗',       src: 'images/stamps/bear-flag.png',   anchor: 'head', scale: 0.55, lift: 0.3, bob: true },
+    { id: 'bear-salute', label: '敬礼',     src: 'images/stamps/bear-salute.png', anchor: 'head', scale: 0.45, lift: 0.3, bob: true },
+    // 頭の上 + 鼻 のセット（サンプル）
+    { id: 'bear-nose',   label: 'クマ+鼻',  thumb: 'images/stamps/bear-nose-thumb.png',
+      parts: [
+        { src: 'images/stamps/bear.png',     anchor: 'head', scale: 0.5,  lift: 0.3, bob: true },
+        { src: 'images/stamps/red-nose.png', anchor: 'nose', scale: 0.22, lift: 0 }
+      ] }
+  ],
+
+  // 外カメで選べるフレーム（内カメの固定フレームとは別です）
   frames: [
-    { id: '01', label: '01', src: 'images/frames/01.png', fit: 'stretch' },
-    { id: '02',    label: '02',   src: 'images/frames/02.png',    fit: 'stretch' }
+    { id: 'red-dots', label: 'レッド', src: 'images/frames/red-dots.png', fit: 'stretch' }
   ]
 };
