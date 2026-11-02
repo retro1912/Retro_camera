@@ -15,6 +15,17 @@
 anchor は head（頭の上）/ eyes（両目の間）/ nose（鼻）/ mouth（口）。
 位置と大きさは scale と lift の数字を変えながら、実機で見て調整します。
 
+## 複数パーツを1つのスタンプにする（頭の上 + 鼻 など）
+`src` や `anchor` の代わりに `parts` を使います。選択ボタンの絵は `thumb` で指定します。
+
+    { id: 'combo', label: 'セット', thumb: 'images/stamps/combo-thumb.png',
+      parts: [
+        { src: 'images/stamps/hat.png',  anchor: 'head', scale: 0.6, lift: 0.1, bob: true },
+        { src: 'images/stamps/nose.png', anchor: 'nose', scale: 0.2, lift: 0 }
+      ] },
+
+`config.js` の `bear-nose` がサンプルです。パーツの数に決まりはありません。
+
 ## フレームを足す手順
 1. 中央をくり抜いた透過PNGを `images/frames/` に入れる
    （おすすめサイズ: 1080 x 2340。四辺に絵があり、中央は透明）

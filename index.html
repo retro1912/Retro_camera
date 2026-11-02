@@ -102,9 +102,16 @@ function loadImg(src) {
   return im;
 }
 const ready = im => im && im.complete && im.naturalWidth > 0;
-CFG.stamps.forEach(s => { s.img = loadImg(s.src); });
+// スタンプは「パーツ」の集まり。parts がなければ、スタンプ自身を1パーツとして扱う。
+CFG.stamps.forEach(s => {
+  if (!Array.isArray(s.parts) || !s.parts.length) {
+    s.parts = [{ src: s.src, anchor: s.anchor, scale: s.scale, lift: s.lift, bob: s.bob }];
+  }
+  s.parts.forEach(p => { p.img = loadImg(p.src); });
+  s.thumb = s.thumb || s.src || s.parts[0].src;   // 選択ボタンの絵
+});
 CFG.frames.forEach(f => { f.img = loadImg(f.src); });
-if (CFG.stamps[0]) $('hero').src = CFG.stamps[0].src;
+if (CFG.stamps[0]) $('hero').src = CFG.stamps[0].thumb;
 
 let facing = 'user';
 let stream = null;
@@ -147,7 +154,7 @@ function buildStrip() {
     b.type = 'button';
     b.setAttribute('aria-pressed', String(item === current));
     const th = document.createElement('span'); th.className = 'thumb';
-    if (item) { const im = document.createElement('img'); im.src = item.src; im.alt = ''; th.appendChild(im); }
+    if (item) { const im = document.createElement('img'); im.src = item.thumb || item.src; im.alt = ''; th.appendChild(im); }
     else { th.textContent = 'なし'; }
     const nm = document.createElement('span'); nm.className = 'name'; nm.textContent = label;
     b.append(th, nm);
@@ -235,12 +242,14 @@ function drawSprite(img, x, y, w, angle, alpha, origin, bobAmt, t, phase) {
 }
 
 function drawStampOnFace(st, stamp, t, phase) {
-  const anchor = stamp.anchor || 'head';
-  const px = st[anchor + '_x'], py = st[anchor + '_y'];
   const up = { x: Math.sin(st.a), y: -Math.cos(st.a) };
-  const lift = (stamp.lift || 0) * st.w;
-  drawSprite(stamp.img, px + up.x * lift, py + up.y * lift, st.w * (stamp.scale || 0.5),
-    st.a, st.alpha, anchor === 'head' ? 'bottom' : 'center', stamp.bob, t, phase);
+  stamp.parts.forEach((part, k) => {
+    const anchor = part.anchor || 'head';
+    const px = st[anchor + '_x'], py = st[anchor + '_y'];
+    const lift = (part.lift || 0) * st.w;
+    drawSprite(part.img, px + up.x * lift, py + up.y * lift, st.w * (part.scale || 0.5),
+      st.a, st.alpha, anchor === 'head' ? 'bottom' : 'center', part.bob, t, phase + k * 0.4);
+  });
 }
 
 function updateStamps(t) {
@@ -297,7 +306,7 @@ function draw(now) {
       setStatus(any || !curStamp ? '' : '顔を映すとスタンプがつきます');
     } else if (landmarkerFailed) {
       setStatus('顔認識を読み込めませんでした（固定表示）');
-      if (curStamp) drawSprite(curStamp.img, cw * 0.5, ch * 0.28, cw * 0.4, Math.sin(t * 1.6) * 0.05, 1, 'bottom', curStamp.bob, t, 0);
+      if (curStamp) drawSprite(curStamp.parts[0].img, cw * 0.5, ch * 0.28, cw * 0.4, Math.sin(t * 1.6) * 0.05, 1, 'bottom', curStamp.parts[0].bob, t, 0);
     } else {
       setStatus('顔認識を準備中…');
     }
