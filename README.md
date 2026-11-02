@@ -33,9 +33,22 @@ anchor は head（頭の上）/ eyes（両目の間）/ nose（鼻）/ mouth（�
 3. GitHubにアップロードする
 
 ## 内カメのフレームを変える
-`config.js` の `frontFrame` に、使いたいフレームの `id` を書きます（例: `'red-dots'`）。
-内カメではこのフレームが固定で表示され、スタンプはその上に重なります。
-フレームなしにしたいときは `null` にします。外カメでは、今までどおりフレームを選べます。
+`config.js` の `frontFrame` に、画像のパスを書きます。
+
+    frontFrame: { src: 'images/frames/navy-ribbon.png', fit: 'stretch' },
+
+このフレームは内カメだけに固定で表示され、スタンプはその上に重なります。
+外カメの選択肢（`frames`）には出ません。フレームなしにしたいときは `null` にします。
+
+## ファビコン（タブやホーム画面のアイコン）を変える
+`images/icons/` の4ファイルを、同じ名前で差し替えます。
+
+- `favicon.ico`  ブラウザのタブ用（16・32・48px入り）
+- `favicon-32.png`  32 x 32
+- `icon-192.png`  192 x 192（Android用）
+- `apple-touch-icon.png`  180 x 180（iPhone・iPadのホーム画面用。透過なしの正方形）
+
+差し替えたあとに反映されないときは、ブラウザのキャッシュが原因です。タブを閉じて開き直してください。
 
 ## 注意
 - ファイル名は半角英数字とハイフンにする（GitHub Pagesは大文字小文字を区別します）

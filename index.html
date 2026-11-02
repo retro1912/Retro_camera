@@ -4,6 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Retro-Bear AR Camera</title>
+<link rel="icon" href="images/icons/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="images/icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="images/icons/icon-192.png">
+<link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
+<meta name="theme-color" content="#0b1f4b">
 <style>
   :root { --red:#c8102e; --navy:#0b1f4b; --cream:#fff8e7; }
   [hidden] { display:none !important; }
@@ -45,7 +50,8 @@
   .primary { background:var(--red); padding:14px 28px; border-radius:99px; font-size:17px; font-weight:700; }
   .ghost { background:rgba(255,255,255,.18); padding:12px 24px; border-radius:99px; font-size:15px; }
   #preview { background:rgba(0,0,0,.92); justify-content:flex-start; padding-top:calc(env(safe-area-inset-top,0px) + 16px); }
-  #preview img { max-width:100%; max-height:64vh; border-radius:10px; box-shadow:0 8px 30px rgba(0,0,0,.6); -webkit-user-select:auto; user-select:auto; -webkit-touch-callout:default; }
+  #preview img, #snap { display:block; max-width:100%; max-height:64vh; border-radius:10px; box-shadow:0 8px 30px rgba(0,0,0,.6); -webkit-user-select:auto; user-select:auto; -webkit-touch-callout:default; }
+  button:disabled { opacity:.6; cursor:default; }
   .row { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; }
   small { opacity:.7; font-size:12px; }
 </style>
@@ -71,7 +77,8 @@
 </div>
 
 <div class="screen" id="preview" hidden>
-  <img id="shot" alt="撮影した写真">
+  <canvas id="snap"></canvas>
+  <img id="shot" alt="撮影した写真" hidden>
   <div class="row">
     <button class="primary" id="save">保存・共有</button>
     <button class="ghost" id="retake">撮り直す</button>
@@ -124,7 +131,13 @@ let running = false;
 let curStamp = CFG.stamps[0] || null;   // 選択中のスタンプ
 let curFrame = CFG.frames[0] || null;   // 選択中のフレーム（外カメ）
 // 内カメで固定表示するフレーム（config.js の frontFrame で指定。なければフレームなし）
-const frontFrame = CFG.frames.find(f => f.id === CFG.frontFrame) || null;
+// { src, fit } と書くと内カメ専用になり、外カメの選択肢には出ない。文字列でid指定する書き方も使える。
+const frontFrame = (() => {
+  const ff = CFG.frontFrame;
+  if (!ff) return null;
+  if (typeof ff === 'string') return CFG.frames.find(f => f.id === ff) || null;
+  return { fit: 'stretch', ...ff, img: loadImg(ff.src) };
+})();
 
 function setStatus(t) {
   const s = $('status');
@@ -302,7 +315,6 @@ function draw(now) {
   ctx.restore();
 
   if (mirror) {
-    drawFrame(cw, ch, frontFrame);   // 内カメは固定フレーム。スタンプはその上に重ねる
     if (landmarker) {
       detect({ cw, vw, vh, s, ox, oy });
       const any = updateStamps(t);
@@ -313,6 +325,7 @@ function draw(now) {
     } else {
       setStatus('顔認識を準備中…');
     }
+    drawFrame(cw, ch, frontFrame);   // 内カメの固定フレームは、スタンプより手前に重ねる
   } else {
     setStatus('');
     drawFrame(cw, ch, curFrame);
@@ -346,24 +359,46 @@ $('flip').addEventListener('click', async () => {
   running = true;
 });
 
-let lastBlob = null, lastURL = null;
+let lastBlob = null, lastURL = null, shotToken = 0;
+const snap = $('snap'), shot = $('shot'), saveBtn = $('save');
+
 $('shutter').addEventListener('click', () => {
   if (!running) return;
+  running = false;                       // 重い顔認識をすぐ止める
+  const token = ++shotToken;
+  lastBlob = null;
+
+  // 1) 今の画面をその場で確保する（ここで撮影が確定）
+  const blobPromise = new Promise(res => cv.toBlob(res, 'image/jpeg', 0.92));
+  snap.width = cv.width; snap.height = cv.height;
+  snap.getContext('2d').drawImage(cv, 0, 0);
+
+  // 2) JPEGの変換を待たずに、すぐプレビューを出す
   const f = $('flash'); f.style.transition = 'none'; f.style.opacity = '.85';
   requestAnimationFrame(() => { f.style.transition = 'opacity .35s'; f.style.opacity = '0'; });
-  cv.toBlob(blob => {
-    if (!blob) return;
+  shot.hidden = true; snap.hidden = false;
+  $('preview').hidden = false; $('strip').hidden = true;
+  saveBtn.disabled = true; saveBtn.textContent = '保存の準備中…';
+
+  // 3) JPEGができたら、長押し保存もできる画像に差し替える
+  blobPromise.then(async blob => {
+    if (token !== shotToken) return;     // 撮り直し済みなら何もしない
+    if (!blob) { saveBtn.textContent = '保存できませんでした。撮り直してください'; return; }
     lastBlob = blob;
     if (lastURL) URL.revokeObjectURL(lastURL);
     lastURL = URL.createObjectURL(blob);
-    $('shot').src = lastURL;
-    $('preview').hidden = false;
-    $('strip').hidden = true;
-    running = false;
-  }, 'image/jpeg', 0.92);
+    shot.src = lastURL;
+    try { await shot.decode(); } catch (_) {}
+    if (token !== shotToken) return;
+    shot.hidden = false; snap.hidden = true;
+    saveBtn.disabled = false; saveBtn.textContent = '保存・共有';
+  });
 });
 
-$('retake').addEventListener('click', () => { $('preview').hidden = true; $('strip').hidden = false; running = true; });
+$('retake').addEventListener('click', () => {
+  shotToken++;                           // 準備中の処理があれば取り消す
+  $('preview').hidden = true; $('strip').hidden = false; running = true;
+});
 
 $('save').addEventListener('click', async () => {
   if (!lastBlob) return;
