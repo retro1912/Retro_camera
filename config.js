@@ -35,7 +35,7 @@ window.APP_CONFIG = {
     { id: 'combo', label: 'レトロベア耳',  thumb: 'images/stamps/combo.png',
       parts:[
           { src: 'images/stamps/head.png', anchor: 'head', scale: 1.8, lift: -0.2, bob: false },
-          { src: 'images/stamps/mouth.png', anchor: 'nose', scale: 0.8 , lift: 0, bob: false}
+          { src: 'images/stamps/mouth.png', anchor: 'nose', scale: 0.5 , lift: 0, bob: false}
       ] },
   ],
 
