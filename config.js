@@ -32,12 +32,8 @@ window.APP_CONFIG = {
   stamps: [
     { id: 'bear',        label: 'レトロベア',     src: 'images/stamps/bear.png',        anchor: 'head', scale: 1,  lift: 0.3, bob: true },
     { id: 'ribon',   label: 'リボン',       src: 'images/stamps/ribon.png',   anchor: 'head', scale: 1.3, lift: 0, bob: false },
-    { id: 'combo', label: 'レトロベア耳',  thumb: 'images/stamps/combo.png',
-      parts:[
-          { src: 'images/stamps/head.png', anchor: 'head', scale: 1.8, lift: -0.2, bob: false },
-          { src: 'images/stamps/mouth.png', anchor: 'nose', scale: 0.5 , lift: 0, bob: false}
-      ] },
-  ],
+    { id: 'combo', label: 'レトロベア耳',src: 'images/stamps/head.png', anchor: 'head', scale: 1.8, lift: -0.2, bob: false },
+      ],
 
   frames: [
     { id: '01', label: '01', src: 'images/frames/01.png', fit: 'stretch' },
