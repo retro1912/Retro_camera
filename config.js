@@ -39,8 +39,8 @@ window.APP_CONFIG = {
   //   helpText    : 入れなかった人に出す一言（例: 'スタッフにお声がけください'）
   gate: {
     enabled: true,
-    lat: 34.693177,
-    lng: 135.509640,
+    lat: 34.691695,
+    lng: 135.507462,
     radius: 100,
     maxAccuracy: 100,
     passMinutes: 30,
