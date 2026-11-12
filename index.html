@@ -46,7 +46,7 @@
   .screen[hidden] { display:none; }
   .screen img.hero { width:min(46vw,200px); height:auto; }
   .screen h1 { margin:0; font-size:24px; }
-  .screen p { margin:0; font-size:14px; line-height:1.6; max-width:22em; opacity:.9; }
+  .screen p { margin:0; font-size:14px; line-height:1.6; max-width:22em; opacity:.9; white-space:pre-line; }
   .primary { background:var(--red); padding:14px 28px; border-radius:99px; font-size:17px; font-weight:700; }
   .ghost { background:rgba(255,255,255,.18); padding:12px 24px; border-radius:99px; font-size:15px; }
   #preview { background:rgba(0,0,0,.92); justify-content:flex-start; padding-top:calc(env(safe-area-inset-top,0px) + 16px); }
@@ -67,6 +67,14 @@
   <div class="sp"></div>
 </div>
 <div id="flash"></div>
+
+<div class="screen" id="gate" hidden>
+  <img class="hero" id="gateHero" alt="">
+  <h1>位置情報を確認します</h1>
+  <p id="gateText">このカメラは、お店の中でだけ遊べます。下のボタンを押して、位置情報の利用を許可してください。</p>
+  <button class="primary" id="gateGo">位置情報を確認する</button>
+  <small id="gateInfo"></small>
+</div>
 
 <div class="screen" id="start">
   <img class="hero" id="hero" alt="">
@@ -351,6 +359,70 @@ async function begin() {
 }
 
 $('go').addEventListener('click', begin);
+
+// ===== 位置情報の確認（お店の中だけで遊べるようにする） =====
+const GATE = CFG.gate || {};
+const gateOn = GATE.enabled !== false && Number.isFinite(GATE.lat) && Number.isFinite(GATE.lng);
+const PASS_KEY = 'retroBearGatePass';
+
+function hasPass() {
+  try {
+    const t = Number(sessionStorage.getItem(PASS_KEY));
+    return t > 0 && Date.now() - t < (GATE.passMinutes ?? 30) * 60000;
+  } catch (e) { return false; }
+}
+function savePass() { try { sessionStorage.setItem(PASS_KEY, String(Date.now())); } catch (e) {} }
+
+// 2点間の距離（メートル）
+function meters(lat1, lng1, lat2, lng2) {
+  const R = 6371000, rad = Math.PI / 180;
+  const dLat = (lat2 - lat1) * rad, dLng = (lng2 - lng1) * rad;
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * rad) * Math.cos(lat2 * rad) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(a));
+}
+
+function gateMessage(text, info) {
+  $('gateText').textContent = text;
+  $('gateInfo').textContent = info || '';
+}
+function gateOpen() { $('gate').hidden = true; $('start').hidden = false; }
+
+function checkLocation() {
+  const btn = $('gateGo');
+  if (!navigator.geolocation) {
+    gateMessage('このブラウザでは位置情報を使えません。別のブラウザでお試しください。');
+    return;
+  }
+  btn.disabled = true; btn.textContent = '確認中…';
+  gateMessage('現在地を確認しています。少しお待ちください。');
+  navigator.geolocation.getCurrentPosition(pos => {
+    btn.disabled = false; btn.textContent = 'もう一度確認する';
+    const { latitude, longitude, accuracy } = pos.coords;
+    const d = meters(latitude, longitude, GATE.lat, GATE.lng);
+    // 屋内はGPSがずれるので、誤差のぶんだけ甘く判定する（誤差の上限は maxAccuracy）
+    const slack = Math.min(accuracy || 0, GATE.maxAccuracy ?? 100);
+    const radius = GATE.radius ?? 100;
+    const info = '店舗から約' + Math.round(d) + 'm（誤差 約' + Math.round(accuracy || 0) + 'm）';
+    if (d - slack <= radius) { savePass(); gateOpen(); return; }
+    gateMessage('お店の中で開いてください。お店から少しはなれているようです。' + (GATE.helpText ? '\n' + GATE.helpText : ''), info);
+  }, err => {
+    btn.disabled = false; btn.textContent = 'もう一度確認する';
+    if (err.code === 1) {
+      gateMessage('位置情報が許可されていません。ブラウザの設定で、このページの位置情報を許可してから、もう一度お試しください。');
+    } else if (err.code === 3) {
+      gateMessage('位置を取得するのに時間がかかっています。電波のよい場所で、もう一度お試しください。');
+    } else {
+      gateMessage('位置を取得できませんでした。端末の位置情報がオンか確認して、もう一度お試しください。');
+    }
+  }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 30000 });
+}
+
+$('gateGo').addEventListener('click', checkLocation);
+if (gateOn && !hasPass()) {
+  if (CFG.stamps[0]) $('gateHero').src = CFG.stamps[0].thumb;
+  $('start').hidden = true;
+  $('gate').hidden = false;
+}
 
 $('flip').addEventListener('click', async () => {
   running = false;
