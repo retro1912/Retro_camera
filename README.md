@@ -4,7 +4,9 @@
 - `index.html`  本体（ふだんは触らなくてOK）
 - `config.js`   スタンプとフレームの一覧（追加・調整はここ）
 - `images/stamps/`  内カメ用スタンプ（透過PNG）
-- `images/frames/`  外カメ用フレーム（中央が透明な透過PNG）
+- `images/frames/`  フレーム（中央が透明な透過PNG）
+- `images/ui/`  画面に出るクマのイラスト
+- `images/icons/`  ファビコン
 
 ## スタンプを足す手順
 1. 透過PNGを `images/stamps/` に入れる（例: `hat.png`）
@@ -35,7 +37,7 @@ anchor は head（頭の上）/ eyes（両目の間）/ nose（鼻）/ mouth（�
 ## 内カメのフレームを変える
 `config.js` の `frontFrame` に、画像のパスを書きます。
 
-    frontFrame: { src: 'images/frames/navy-ribbon.png', fit: 'stretch' },
+    frontFrame: { src: 'images/frames/brown-ribbon.png', fit: 'stretch' },
 
 このフレームは内カメだけに固定で表示され、スタンプはその上に重なります。
 外カメの選択肢（`frames`）には出ません。フレームなしにしたいときは `null` にします。
@@ -68,3 +70,7 @@ QRコードには、このサイトのURLをそのまま入れます。QRを読�
 - ファイル名は半角英数字とハイフンにする（GitHub Pagesは大文字小文字を区別します）
 - 画像は1枚あたり数百KB以内にすると、読み込みが速くなります
 - 更新が反映されないときは、ブラウザを再読み込みしてください
+
+## 画面の色を変える
+`index.html` の上のほうにある `:root { ... }` に、使っている色がまとまっています。
+ブラウン（`--brown`）、ミント（`--mint`）、ティール（`--teal`）、ゴールド（`--gold`）の値を変えると、全体の色が変わります。

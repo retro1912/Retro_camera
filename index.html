@@ -8,23 +8,38 @@
 <link rel="icon" type="image/png" sizes="32x32" href="images/icons/favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="images/icons/icon-192.png">
 <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
-<meta name="theme-color" content="#0b1f4b">
+<meta name="theme-color" content="#5c321a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&display=swap">
 <style>
-  :root { --red:#c8102e; --navy:#0b1f4b; --cream:#fff8e7; }
+  /* 配色は、お店の公式オンラインショップに合わせています */
+  :root {
+    --brown:#5c321a; --brown-d:#3f220f; --ink:#4a2a16;
+    --mint:#dceeee;  --cream:#fefbf7;
+    --teal:#4ea8a6;  --teal-d:#357f7c;
+    --gold:#c5a631;  --gold-l:#e4cd72; --gold-d:#a88233;
+    --serif:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;
+  }
   [hidden] { display:none !important; }
-  html,body { margin:0; height:100%; background:#000; color:#fff; overflow:hidden;
-    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;
-    -webkit-user-select:none; user-select:none; touch-action:manipulation; }
+  html,body { margin:0; height:100%; background:var(--brown-d); color:var(--cream); overflow:hidden;
+    font-family:var(--sans); -webkit-user-select:none; user-select:none; touch-action:manipulation; }
+  button { font:inherit; color:inherit; border:0; cursor:pointer; }
+  button:disabled { cursor:default; }
+
+  /* ---------- カメラ画面 ---------- */
   #cv { position:fixed; inset:0; width:100%; height:100%; display:block; }
   #vid { position:fixed; width:2px; height:2px; opacity:0; pointer-events:none; left:0; top:0; }
   .top { position:fixed; left:0; right:0; top:0; padding:calc(env(safe-area-inset-top,0px) + 10px) 16px 0; text-align:center; pointer-events:none; }
-  #status { display:inline-block; padding:6px 14px; border-radius:99px; background:rgba(0,0,0,.55); font-size:13px; }
+  #status { display:inline-block; padding:6px 16px; border-radius:99px; background:rgba(92,50,26,.78); color:var(--cream);
+    font-family:var(--serif); font-weight:500; font-size:13px; letter-spacing:.06em; }
   .bar { position:fixed; left:0; right:0; bottom:0; display:flex; align-items:center; justify-content:space-between;
     padding:0 max(28px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 22px) max(28px,env(safe-area-inset-left,0px)); }
   .bar .sp { width:64px; }
-  button { font:inherit; color:#fff; border:0; cursor:pointer; }
-  #flip { width:64px; height:64px; border-radius:50%; background:rgba(0,0,0,.55); font-size:12px; line-height:1.2; }
-  #shutter { width:78px; height:78px; border-radius:50%; background:#fff; border:5px solid rgba(255,255,255,.5); background-clip:padding-box; }
+  #flip { width:64px; height:64px; border-radius:50%; background:rgba(92,50,26,.78); color:var(--cream);
+    border:1.5px solid rgba(228,205,114,.7); font-family:var(--serif); font-size:12px; line-height:1.25; letter-spacing:.04em; }
+  #shutter { width:78px; height:78px; border-radius:50%; background:var(--cream); border:5px solid var(--gold); box-shadow:0 0 0 3px rgba(92,50,26,.55); }
   #shutter:active { transform:scale(.94); }
   #flash { position:fixed; inset:0; background:#fff; opacity:0; pointer-events:none; transition:opacity .35s; }
 
@@ -33,27 +48,105 @@
     display:flex; gap:10px; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none;
     padding:6px max(16px,env(safe-area-inset-right,0px)) 6px max(16px,env(safe-area-inset-left,0px)); }
   #strip::-webkit-scrollbar { display:none; }
-  #strip[hidden] { display:none; }
   .chip { flex:0 0 auto; width:62px; display:flex; flex-direction:column; align-items:center; gap:4px; background:none; padding:0; }
-  .chip .thumb { width:56px; height:56px; border-radius:14px; background:rgba(0,0,0,.55); border:3px solid transparent;
-    display:flex; align-items:center; justify-content:center; overflow:hidden; font-size:11px; }
+  .chip .thumb { width:56px; height:56px; border-radius:14px; background:rgba(254,251,247,.82); border:3px solid transparent; color:var(--brown);
+    display:flex; align-items:center; justify-content:center; overflow:hidden; font-family:var(--serif); font-size:11px; }
   .chip .thumb img { width:100%; height:100%; object-fit:contain; display:block; pointer-events:none; }
-  .chip .name { font-size:10px; line-height:1.2; text-shadow:0 1px 3px rgba(0,0,0,.8); white-space:nowrap; max-width:62px; overflow:hidden; text-overflow:ellipsis; }
-  .chip[aria-pressed="true"] .thumb { border-color:#fff; }
+  .chip .name { font-family:var(--serif); font-size:10.5px; line-height:1.2; color:var(--cream); text-shadow:0 1px 3px rgba(40,20,8,.9); white-space:nowrap; max-width:62px; overflow:hidden; text-overflow:ellipsis; }
+  .chip[aria-pressed="true"] .thumb { border-color:var(--gold-l); box-shadow:0 0 0 2px var(--brown); }
 
-  .screen { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px;
-    padding:24px max(24px,env(safe-area-inset-right,0px)); text-align:center; background:var(--navy); }
-  .screen[hidden] { display:none; }
-  .screen img.hero { width:min(46vw,200px); height:auto; }
-  .screen h1 { margin:0; font-size:24px; }
-  .screen p { margin:0; font-size:14px; line-height:1.6; max-width:22em; opacity:.9; white-space:pre-line; }
-  .primary { background:var(--red); padding:14px 28px; border-radius:99px; font-size:17px; font-weight:700; }
-  .ghost { background:rgba(255,255,255,.18); padding:12px 24px; border-radius:99px; font-size:15px; }
-  #preview { background:rgba(0,0,0,.92); justify-content:flex-start; padding-top:calc(env(safe-area-inset-top,0px) + 16px); }
-  #preview img, #snap { display:block; max-width:100%; max-height:64vh; border-radius:10px; box-shadow:0 8px 30px rgba(0,0,0,.6); -webkit-user-select:auto; user-select:auto; -webkit-touch-callout:default; }
-  button:disabled { opacity:.6; cursor:default; }
-  .row { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; }
-  small { opacity:.7; font-size:12px; }
+  /* ---------- 画面共通 ---------- */
+  .screen { position:fixed; inset:0; display:flex; flex-direction:column; overflow-y:auto; text-align:center; color:var(--ink); }
+  .screen .wrap { margin:auto; width:100%; box-sizing:border-box; max-width:420px;
+    padding:20px max(20px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 24px) max(20px,env(safe-area-inset-left,0px)); }
+  .card { position:relative; background:#fff; border-radius:18px; padding:28px 22px 22px; box-shadow:0 10px 28px rgba(60,30,10,.16); }
+  h1 { margin:0; font-family:var(--serif); font-weight:700; font-size:24px; line-height:1.45; letter-spacing:.08em; color:var(--brown); }
+  .card p { margin:0; font-size:14px; line-height:1.8; }
+  .card small { display:block; font-size:12px; line-height:1.6; color:#7d6a5c; }
+  .orn { display:flex; align-items:center; gap:10px; margin:14px auto; max-width:230px; }
+  .orn::before, .orn::after { content:""; flex:1; height:1px; background:var(--gold); }
+  .orn i { width:7px; height:7px; background:var(--gold); transform:rotate(45deg); }
+  .btn { position:relative; display:inline-flex; align-items:center; justify-content:center; gap:10px; width:100%; box-sizing:border-box;
+    min-height:54px; padding:12px 26px; border-radius:99px; color:#fff; font-family:var(--serif); font-weight:700; font-size:18px; letter-spacing:.1em;
+    background:linear-gradient(180deg,var(--teal),#3f9391); box-shadow:0 3px 0 var(--teal-d), 0 8px 16px rgba(53,127,124,.28); }
+  .btn:active { transform:translateY(2px); box-shadow:0 1px 0 var(--teal-d); }
+  .btn:disabled { opacity:.85; }
+  .btn::after { content:"›"; font-size:24px; line-height:1; margin-top:-3px; }
+  .btn.busy::after { content:none; }
+  .spin { display:none; width:18px; height:18px; border-radius:50%; border:3px solid rgba(255,255,255,.45); border-top-color:#fff; animation:rot .8s linear infinite; }
+  .btn.busy .spin { display:block; }
+  @keyframes rot { to { transform:rotate(360deg); } }
+  @media (prefers-reduced-motion:reduce) { .spin { animation-duration:2.4s; } }
+
+  /* ---------- 1) 位置情報の確認：ミントのストライプ + ブラウンの帯 ---------- */
+  .s-gate { background:repeating-linear-gradient(90deg,var(--mint) 0 26px,var(--cream) 26px 52px); }
+  .band { flex:none; background:var(--brown); color:var(--cream); font-family:var(--serif); font-weight:500; font-size:12.5px; letter-spacing:.22em;
+    padding:calc(env(safe-area-inset-top,0px) + 14px) 16px 12px; }
+  .scallop { flex:none; height:14px; margin-top:-1px; background:radial-gradient(circle at 10px 0,var(--brown) 10px,transparent 10.5px) 0 0/20px 14px repeat-x; }
+  .s-gate .card { border:1px solid rgba(197,166,49,.55); outline:1px solid rgba(197,166,49,.35); outline-offset:-7px; padding:34px 24px 22px; }
+  .s-gate .card > * + * { margin-top:0; }
+  .pin { width:68px; height:68px; margin:-68px auto 14px; border-radius:50%; background:var(--teal); border:4px solid #fff; box-shadow:0 0 0 2px var(--gold), 0 6px 14px rgba(60,30,10,.2);
+    display:flex; align-items:center; justify-content:center; }
+  .pin svg { width:32px; height:32px; fill:#fff; }
+  .s-gate .btn { margin:20px 0 14px; }
+  .note { margin:14px 0 0 !important; padding:10px 12px; border-radius:10px; background:#fbf1ea; border:1px solid #e3c3ad; color:#7a3a1c; font-size:13px !important; line-height:1.7 !important; text-align:left; }
+
+  /* ---------- 2) お店から離れている：ブラウン地 + クリームのカード ---------- */
+  .s-away { background:repeating-linear-gradient(90deg,#5c321a 0 26px,#573017 26px 52px); color:var(--cream); }
+  .s-away .wrap { padding-top:calc(env(safe-area-inset-top,0px) + 28px); }
+  .s-away .bear { display:block; width:108px; height:auto; margin:0 auto -34px; position:relative; z-index:1; filter:drop-shadow(0 6px 8px rgba(0,0,0,.35)); }
+  .s-away .card { background:var(--cream); padding:46px 22px 22px; border:2px solid var(--gold); box-shadow:0 0 0 5px var(--brown), 0 0 0 6.5px rgba(197,166,49,.7), 0 14px 30px rgba(0,0,0,.35); }
+  .eyebrow { font-family:var(--serif); font-weight:500; font-size:13px !important; letter-spacing:.3em; color:#85651f; margin-bottom:8px !important; }
+  .s-away h1 { font-size:22px; }
+  .meter { display:flex; align-items:center; gap:8px; margin:6px 0 4px; font-family:var(--serif); font-size:13px; color:var(--brown); }
+  .meter .line { flex:1; height:0; border-top:2px dashed var(--gold); }
+  .meter .dot { display:flex; flex-direction:column; align-items:center; gap:4px; letter-spacing:.1em; }
+  .meter .dot::before { content:""; width:14px; height:14px; border-radius:50%; background:var(--teal); border:3px solid #fff; box-shadow:0 0 0 1.5px var(--teal); }
+  .meter .dot.shop::before { background:var(--gold); box-shadow:0 0 0 1.5px var(--gold-d); }
+  .dist { font-family:var(--serif); color:var(--brown); font-size:15px !important; margin-top:10px !important; }
+  .dist b { font-size:44px; font-weight:700; letter-spacing:.02em; color:var(--gold-d); font-variant-numeric:tabular-nums; }
+  .s-away .acc { color:#7d6a5c; font-size:12px !important; margin-bottom:12px !important; }
+  .help { margin-top:10px !important; padding:10px 12px; border-radius:10px; background:#fff; border:1px dashed var(--gold); color:var(--brown); font-weight:700; }
+  .s-away .btn { margin-top:18px; }
+
+  /* ---------- 3) 確認OK・カメラ起動：ティール地 + ゴールドのリボン ---------- */
+  .s-ok { background:radial-gradient(circle at 50% 0%,#68bab7 0,var(--teal) 55%,#3f9391 100%); }
+  .s-ok::before { content:""; position:absolute; inset:0; pointer-events:none;
+    background:radial-gradient(circle,rgba(255,255,255,.14) 1.5px,transparent 2px) 0 0/22px 22px; }
+  .s-ok .wrap { position:relative; padding-top:calc(env(safe-area-inset-top,0px) + 22px); }
+  .ribbon { position:relative; z-index:2; width:230px; margin:0 auto -17px; padding:8px 0 9px; color:var(--brown);
+    font-family:var(--serif); font-weight:700; font-size:17px; letter-spacing:.34em; text-indent:.34em;
+    background:linear-gradient(180deg,var(--gold-l),var(--gold) 55%,var(--gold-d)); border-radius:4px; box-shadow:0 5px 10px rgba(40,70,70,.3); }
+  .ribbon::before, .ribbon::after { content:""; position:absolute; top:9px; width:26px; height:100%; background:var(--gold-d); z-index:-1;
+    clip-path:polygon(0 0,100% 0,100% 100%,0 100%,28% 50%); }
+  .ribbon::before { left:-17px; } .ribbon::after { right:-17px; transform:scaleX(-1); }
+  .s-ok .card { padding:30px 22px 22px; }
+  .s-ok .bear { display:block; width:min(36vw,126px); height:auto; margin:4px auto 6px; filter:drop-shadow(0 5px 6px rgba(60,30,10,.25)); }
+  .badge { display:inline-block; margin:6px auto 10px !important; padding:4px 14px; border-radius:99px; background:#e6f3f2; color:#2c6f6c; font-weight:700; font-size:12.5px !important; line-height:1.6 !important; letter-spacing:.04em; }
+  .steps { list-style:none; margin:14px 0 20px; padding:0; display:flex; flex-direction:column; gap:10px; text-align:left; }
+  .steps li { display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:12px; background:var(--cream); border:1px solid #efe3cf; font-size:13.5px; line-height:1.55; }
+  .steps b { flex:none; width:26px; height:26px; border-radius:50%; background:var(--brown); color:var(--gold-l); font-family:var(--serif); font-size:14px; display:flex; align-items:center; justify-content:center; }
+  .s-ok small { margin-top:10px; }
+
+  /* 画面の低い端末（iPhone SEなど）では、少しコンパクトにする */
+  @media (max-height:700px) {
+    .s-away .bear { width:84px; margin-bottom:-28px; }
+    .s-away .wrap { padding-top:calc(env(safe-area-inset-top,0px) + 14px); }
+    .s-away .card { padding-top:38px; }
+    .dist b { font-size:38px; }
+    .s-ok .bear { width:96px; }
+    .steps { gap:7px; margin:10px 0 14px; }
+    .steps li { padding:7px 10px; }
+  }
+
+  /* ---------- 撮影後のプレビュー ---------- */
+  #preview { background:var(--brown-d); color:var(--cream); align-items:center; justify-content:flex-start; gap:18px; padding:calc(env(safe-area-inset-top,0px) + 16px) 20px calc(env(safe-area-inset-bottom,0px) + 20px); box-sizing:border-box; }
+  #preview img, #snap { display:block; max-width:100%; max-height:64vh; border-radius:12px; border:2px solid var(--gold); box-shadow:0 8px 30px rgba(0,0,0,.6); -webkit-user-select:auto; user-select:auto; -webkit-touch-callout:default; }
+  #preview .row { display:flex; gap:12px; width:100%; max-width:420px; }
+  #preview .btn { flex:1.4; font-size:16px; padding:12px 14px; }
+  #preview .btn::after { content:none; }
+  .ghost { flex:1; min-height:54px; padding:12px 14px; border-radius:99px; background:transparent; border:1.5px solid var(--gold-l) !important; color:var(--cream); font-family:var(--serif); font-weight:700; font-size:16px; letter-spacing:.08em; }
+  #preview small { font-size:12px; color:#d9c6b4; }
 </style>
 </head>
 <body>
@@ -68,27 +161,66 @@
 </div>
 <div id="flash"></div>
 
-<div class="screen" id="gate" hidden>
-  <img class="hero" id="gateHero" alt="">
-  <h1>位置情報を確認します</h1>
-  <p id="gateText">このカメラは、お店の中でだけ遊べます。下のボタンを押して、位置情報の利用を許可してください。</p>
-  <button class="primary" id="gateGo">位置情報を確認する</button>
-  <small id="gateInfo"></small>
+<!-- 1) 位置情報の確認 -->
+<div class="screen s-gate" id="gate" hidden>
+  <div class="band">ご来店ありがとうございます</div>
+  <div class="scallop"></div>
+  <div class="wrap">
+    <div class="card">
+      <div class="pin" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg></div>
+      <h1>位置情報の確認</h1>
+      <div class="orn"><i></i></div>
+      <p>お店にいらっしゃるかを、<br>かんたんに確認します。<br>このカメラは、お店の中でだけ遊べます。</p>
+      <p class="note" id="gateNote" role="alert" hidden></p>
+      <button class="btn" id="gateGo"><span class="spin"></span><span id="gateGoLabel">位置情報を確認する</span></button>
+      <small>位置情報は確認のためだけに使います。<br>保存や送信はしません。</small>
+    </div>
+  </div>
 </div>
 
-<div class="screen" id="start">
-  <img class="hero" id="hero" alt="">
-  <h1>レトロベアと一緒に撮ろう</h1>
-  <p>内カメで顔を映すと、スタンプが顔につきます。外カメではフレームつきで撮れます。下のボタンで種類を選べます。</p>
-  <button class="primary" id="go">カメラを起動</button>
-  <small id="err"></small>
+<!-- 2) お店から離れている -->
+<div class="screen s-away" id="away" hidden>
+  <div class="wrap">
+    <img class="bear" src="images/ui/bear-away.png" alt="">
+    <div class="card">
+      <p class="eyebrow">ごめんなさい</p>
+      <h1>お店から少し<br>はなれているようです</h1>
+      <div class="orn"><i></i></div>
+      <div class="meter"><span class="dot you">あなた</span><span class="line"></span><span class="dot shop">お店</span></div>
+      <p class="dist">お店から約 <b id="awayDist">500 m</b></p>
+      <p class="acc" id="awayAcc"></p>
+      <p>お店の近くで、もう一度お試しください。</p>
+      <p class="help" id="awayHelp" hidden></p>
+      <button class="btn" id="awayRetry">もう一度確認する</button>
+    </div>
+  </div>
 </div>
 
+<!-- 3) 確認OK・カメラ起動 -->
+<div class="screen s-ok" id="start">
+  <div class="wrap">
+    <div class="ribbon">WELCOME</div>
+    <div class="card">
+      <img class="bear" src="images/ui/bear-welcome.png" alt="">
+      <p class="badge" id="okBadge" hidden>✓ 位置情報を確認しました</p>
+      <h1>レトロベアと<br>一緒に撮ろう</h1>
+      <ol class="steps">
+        <li><b>1</b><span>内カメで顔を映すと、スタンプが顔につきます</span></li>
+        <li><b>2</b><span>下のボタンで、スタンプを選びます（外カメではフレーム）</span></li>
+        <li><b>3</b><span>シャッターで撮影して、写真を保存します</span></li>
+      </ol>
+      <button class="btn" id="go">カメラを起動</button>
+      <small id="err"></small>
+    </div>
+  </div>
+</div>
+
+<!-- 撮影後のプレビュー -->
 <div class="screen" id="preview" hidden>
   <canvas id="snap"></canvas>
   <img id="shot" alt="撮影した写真" hidden>
   <div class="row">
-    <button class="primary" id="save">保存・共有</button>
+    <button class="btn" id="save"><span class="spin"></span><span id="saveLabel">保存・共有</span></button>
     <button class="ghost" id="retake">撮り直す</button>
   </div>
   <small>うまく保存できない場合は、写真を長押ししてください。</small>
@@ -126,7 +258,6 @@ CFG.stamps.forEach(s => {
   s.thumb = s.thumb || s.src || s.parts[0].src;   // 選択ボタンの絵
 });
 CFG.frames.forEach(f => { f.img = loadImg(f.src); });
-if (CFG.stamps[0]) $('hero').src = CFG.stamps[0].thumb;
 
 let facing = 'user';
 let stream = null;
@@ -381,47 +512,62 @@ function meters(lat1, lng1, lat2, lng2) {
   return 2 * R * Math.asin(Math.sqrt(a));
 }
 
-function gateMessage(text, info) {
-  $('gateText').textContent = text;
-  $('gateInfo').textContent = info || '';
+function gateNote(text) { const n = $('gateNote'); n.textContent = text || ''; n.hidden = !text; }
+function setChecking(on) {
+  const b = $('gateGo');
+  b.disabled = on; b.classList.toggle('busy', on);
+  $('gateGoLabel').textContent = on ? '確認中…' : (gateTried ? 'もう一度確認する' : '位置情報を確認する');
 }
-function gateOpen() { $('gate').hidden = true; $('start').hidden = false; }
+let gateTried = false;
+
+function gateOpen() {
+  $('gate').hidden = true; $('away').hidden = true;
+  $('start').hidden = false;
+  $('okBadge').hidden = !gateOn;             // 確認を通ったときだけ「確認しました」を出す
+}
+
+function showAway(d, accuracy) {
+  $('awayDist').textContent = d >= 1000 ? (d / 1000).toFixed(1) + ' km' : Math.round(d) + ' m';
+  $('awayAcc').textContent = '（GPSの誤差 約' + Math.round(accuracy || 0) + 'm）';
+  const h = $('awayHelp'); h.textContent = GATE.helpText || ''; h.hidden = !GATE.helpText;
+  $('gate').hidden = true; $('away').hidden = false;
+}
 
 function checkLocation() {
-  const btn = $('gateGo');
+  gateNote('');
   if (!navigator.geolocation) {
-    gateMessage('このブラウザでは位置情報を使えません。別のブラウザでお試しください。');
+    gateNote('このブラウザでは位置情報を使えません。別のブラウザでお試しください。');
     return;
   }
-  btn.disabled = true; btn.textContent = '確認中…';
-  gateMessage('現在地を確認しています。少しお待ちください。');
+  setChecking(true);
   navigator.geolocation.getCurrentPosition(pos => {
-    btn.disabled = false; btn.textContent = 'もう一度確認する';
+    gateTried = true; setChecking(false);
     const { latitude, longitude, accuracy } = pos.coords;
     const d = meters(latitude, longitude, GATE.lat, GATE.lng);
     // 屋内はGPSがずれるので、誤差のぶんだけ甘く判定する（誤差の上限は maxAccuracy）
     const slack = Math.min(accuracy || 0, GATE.maxAccuracy ?? 100);
     const radius = GATE.radius ?? 100;
-    const info = '店舗から約' + Math.round(d) + 'm（誤差 約' + Math.round(accuracy || 0) + 'm）';
     if (d - slack <= radius) { savePass(); gateOpen(); return; }
-    gateMessage('お店の中で開いてください。お店から少しはなれているようです。' + (GATE.helpText ? '\n' + GATE.helpText : ''), info);
+    showAway(d, accuracy);
   }, err => {
-    btn.disabled = false; btn.textContent = 'もう一度確認する';
+    gateTried = true; setChecking(false);
     if (err.code === 1) {
-      gateMessage('位置情報が許可されていません。ブラウザの設定で、このページの位置情報を許可してから、もう一度お試しください。');
+      gateNote('位置情報が許可されていません。ブラウザの設定で、このページの位置情報を許可してから、もう一度お試しください。');
     } else if (err.code === 3) {
-      gateMessage('位置を取得するのに時間がかかっています。電波のよい場所で、もう一度お試しください。');
+      gateNote('位置を取得するのに時間がかかっています。電波のよい場所で、もう一度お試しください。');
     } else {
-      gateMessage('位置を取得できませんでした。端末の位置情報がオンか確認して、もう一度お試しください。');
+      gateNote('位置を取得できませんでした。端末の位置情報がオンか確認して、もう一度お試しください。');
     }
   }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 30000 });
 }
 
 $('gateGo').addEventListener('click', checkLocation);
+$('awayRetry').addEventListener('click', () => { $('away').hidden = true; $('gate').hidden = false; checkLocation(); });
 if (gateOn && !hasPass()) {
-  if (CFG.stamps[0]) $('gateHero').src = CFG.stamps[0].thumb;
   $('start').hidden = true;
   $('gate').hidden = false;
+} else {
+  $('okBadge').hidden = !gateOn;
 }
 
 $('flip').addEventListener('click', async () => {
@@ -450,12 +596,12 @@ $('shutter').addEventListener('click', () => {
   requestAnimationFrame(() => { f.style.transition = 'opacity .35s'; f.style.opacity = '0'; });
   shot.hidden = true; snap.hidden = false;
   $('preview').hidden = false; $('strip').hidden = true;
-  saveBtn.disabled = true; saveBtn.textContent = '保存の準備中…';
+  saveBtn.disabled = true; saveBtn.classList.add('busy'); $('saveLabel').textContent = '保存の準備中…';
 
   // 3) JPEGができたら、長押し保存もできる画像に差し替える
   blobPromise.then(async blob => {
     if (token !== shotToken) return;     // 撮り直し済みなら何もしない
-    if (!blob) { saveBtn.textContent = '保存できませんでした。撮り直してください'; return; }
+    if (!blob) { saveBtn.classList.remove('busy'); $('saveLabel').textContent = '保存できませんでした'; return; }
     lastBlob = blob;
     if (lastURL) URL.revokeObjectURL(lastURL);
     lastURL = URL.createObjectURL(blob);
@@ -463,7 +609,7 @@ $('shutter').addEventListener('click', () => {
     try { await shot.decode(); } catch (_) {}
     if (token !== shotToken) return;
     shot.hidden = false; snap.hidden = true;
-    saveBtn.disabled = false; saveBtn.textContent = '保存・共有';
+    saveBtn.disabled = false; saveBtn.classList.remove('busy'); $('saveLabel').textContent = '保存・共有';
   });
 });
 
