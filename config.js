@@ -39,12 +39,12 @@ window.APP_CONFIG = {
   //   helpText    : 入れなかった人に出す一言（例: 'スタッフにお声がけください'）
   gate: {
     enabled: true,
-    lat: null,
-    lng: null,
+    lat: 34.691695,
+    lng: 135.507462,
     radius: 100,
     maxAccuracy: 100,
     passMinutes: 30,
-    helpText: ''
+    helpText: '店内でお試しください'
   },
 
   // 内カメ（自撮り）だけに固定で表示するフレーム。外カメの選択肢には出ません。
